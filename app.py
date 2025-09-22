@@ -14,3 +14,5 @@ for i in range(10):
 numero_a = input("Dame el primer numero: ")
 numero_b = input("Dame el segundo numero: ")
 print(f"la sumas de los dos numeros es: {numero_a + numero_b}")
+print(f"la resta de los dos nuemro es: {numero_a} + {numero_b}")
+
