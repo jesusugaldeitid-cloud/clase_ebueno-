@@ -11,8 +11,8 @@ for i in range(10):
     print(f"count: {i}")
 
 
-numero_a = input("Dame el primer numero: ")
-numero_b = input("Dame el segundo numero: ")
-print(f"la sumas de los dos numeros es: {numero_a + numero_b}")
-print(f"la resta de los dos nuemro es: {numero_a} + {numero_b}")
+numero_a = int(input("Dame el primer número: "))
+numero_b = int(input("Dame el segundo número: "))
+print(f"La suma de los dos números es: {numero_a + numero_b}")
+print(f"La resta de los dos números es: {numero_a - numero_b}")
 
