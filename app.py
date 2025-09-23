@@ -16,3 +16,4 @@ numero_b = int(input("Dame el segundo número: "))
 print(f"La suma de los dos números es: {numero_a + numero_b}")
 print(f"La resta de los dos números es: {numero_a - numero_b}")
 
+print(f"multiplicacion: {numero_a * numero_b}")
