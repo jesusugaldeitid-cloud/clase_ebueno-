@@ -1,50 +1,69 @@
 import serial
 import time
 
-def configure_device(port, baudrate, hostname, username, password, domain):
-    try:
-        # Abrir conexión serial
-        ser = serial.Serial(port, baudrate, timeout=1)
-        time.sleep(2)  # Esperar que inicie la conexión
+class RouterCisco:
+    def _init_(self, puerto, baudios=9600, timeout=1):
+        """
+        Inicializa la conexión serial con el router Cisco.
+        """
+        self.puerto = puerto
+        self.baudios = baudios
+        self.timeout = timeout
+        self.conexion = None
 
-        # Entrar al modo privilegiado y configuración
-        ser.write("enable\r\n".encode())
-        time.sleep(1)
-        ser.write("configure terminal\r\n".encode())
-        time.sleep(1)
+    def conectar(self):
+        """
+        Abre la conexión serial al router.
+        """
+        try:
+            self.conexion = serial.Serial(port=self.puerto, baudrate=self.baudios, timeout=self.timeout)
+            time.sleep(2)  # Espera para inicializar la consola
+            print(f"[+] Conectado correctamente al router por {self.puerto} a {self.baudios} bps.")
+        except serial.SerialException as e:
+            print(f"[!] Error al conectar: {e}")
+            self.conexion = None
 
-        # Configuración básica
-        ser.write(f"hostname {hostname}\r\n".encode())
-        time.sleep(1)
-        ser.write(f"username {username} privilege 15 secret {password}\r\n".encode())
-        time.sleep(1)
-        ser.write(f"ip domain-name {domain}\r\n".encode())
-        time.sleep(1)
+    def enviar_comando(self, comando, espera=1):
+        """
+        Envía cualquier comando al router y retorna la salida.
+        """
+        if self.conexion is None:
+            print("[!] No hay conexión activa.")
+            return None
+        
+        # Enviar comando
+        self.conexion.write((comando + '\n').encode())
+        time.sleep(espera)  # Esperar a que el router responda
+        
+        # Leer toda la respuesta disponible
+        salida = self.conexion.read_all().decode(errors='ignore')
+        return salida
 
-        # Generación de llaves SSH
-        ser.write("crypto key generate rsa modulus 1024\r\n".encode())
-        time.sleep(5)  # este proceso tarda más
+    def cerrar(self):
+        """
+        Cierra la conexión serial.
+        """
+        if self.conexion:
+            self.conexion.close()
+            print("[+] Conexión cerrada.")
 
-        # Configuración de acceso remoto
-        ser.write("line vty 0 4\r\n".encode())
-        time.sleep(1)
-        ser.write("login local\r\n".encode())
-        ser.write("transport input ssh\r\n".encode())
-        ser.write("transport output ssh\r\n".encode())
-        ser.write("exit\r\n".encode())
-
-        # Línea de consola
-        ser.write("line console 0\r\n".encode())
-        time.sleep(1)
-
-        # Cerrar sesión
-        ser.write("end\r\n".encode())
-        ser.write("write memory\r\n".encode())  # guardar config
-        ser.close()
-
-        print("Device configured successfully.")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-r1= configure_device("COM3", 9600, "Router1", "cisco", "cisco", "example.com")
+if _name_ == "_main_":
+    puerto = 'COM12' \
+    ''  # Cambia según tu puerto
+    router = RouterCisco(puerto)
+    router.conectar()
+    
+    if router.conexion:
+        try:
+            while True:
+                comando = input("Ingrese comando para el router (use 'quit' para salir del programa): ")
+                if comando.lower() == 'quit':  # Solo 'quit' cierra el script
+                    print("[*] Saliendo del programa...")
+                    break
+                # Envía cualquier comando, incluyendo 'exit', al router
+                respuesta = router.enviar_comando(comando)
+                print(respuesta)
+        except KeyboardInterrupt:
+            print("\n[*] Se interrumpió la ejecución con Ctrl+C.")
+        finally:
+            router.cerrar()
