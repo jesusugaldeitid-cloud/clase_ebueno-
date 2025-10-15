@@ -1,0 +1,7 @@
+HOSTNAME,INTERFACE,IPADDR,OK,METHOD,STATUS,PROTOCOL
+Router0,GigabitEthernet0/0,192.168.1.1,YES,manual,down,down
+Router0,GigabitEthernet0/1,192.168.10.1,YES,NVRAM,down,down
+Router0,Serial0/0/0,unassigned,YES,NVRAM,administratively down,down
+Router0,Serial0/0/1,unassigned,YES,NVRAM,administratively down,down
+Router0,FastEthernet0/2/0,unassigned,YES,NVRAM,administratively down,down
+Router0,FastEthernet0/2/1,unassigned,YES,NVRAM,administratively down,down
